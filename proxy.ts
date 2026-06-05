@@ -1,0 +1,37 @@
+import { NextResponse, type NextRequest } from "next/server";
+
+const ADMIN_COOKIE = "lgz_admin_session";
+const CUSTOMER_COOKIE = "lgz_customer_session";
+
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminLogin = pathname === "/admin/login";
+
+  const isCustomerRoute = pathname.startsWith("/minha-conta");
+
+  if (isAdminRoute && !isAdminLogin) {
+    const adminSession = request.cookies.get(ADMIN_COOKIE)?.value;
+
+    if (!adminSession) {
+      const loginUrl = new URL("/admin/login", request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  if (isCustomerRoute) {
+    const customerSession = request.cookies.get(CUSTOMER_COOKIE)?.value;
+
+    if (!customerSession) {
+      const loginUrl = new URL("/login", request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/admin/:path*", "/minha-conta/:path*"],
+};

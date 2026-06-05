@@ -1,0 +1,256 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("ADMIN")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  adminSessions AdminSession[]
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  document  String?
+  active    Boolean  @default(true)
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  customerSessions CustomerSession[]
+}
+
+model ProductCategory {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  type        String    @default("ESPORTS_STORE")
+  active      Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id            String           @id @default(cuid())
+  name          String
+  slug          String           @unique
+  description   String?
+  price         Float            @default(0)
+  imageUrl      String?
+  active        Boolean          @default(true)
+  featured      Boolean          @default(false)
+  stockQuantity Int              @default(0)
+  categoryId    String?
+  category      ProductCategory? @relation(fields: [categoryId], references: [id])
+  orderItems    OrderItem[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  customerId String
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  status     String      @default("PENDING")
+  total      Float       @default(0)
+  couponId   String?
+  coupon     Coupon?     @relation(fields: [couponId], references: [id])
+  items      OrderItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(1)
+  unitPrice Float   @default(0)
+  total     Float   @default(0)
+}
+
+model Coupon {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  description   String?
+  discountType  String    @default("PERCENTAGE")
+  discountValue Float     @default(0)
+  active        Boolean   @default(true)
+  startsAt      DateTime?
+  expiresAt     DateTime?
+  maxUses       Int?
+  usedCount     Int       @default(0)
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  game        String
+  description String?
+  logoUrl     String?
+  active      Boolean  @default(true)
+  players     Player[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  nickname  String
+  realName  String?
+  role      String?
+  imageUrl  String?
+  bio       String?
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Influencer {
+  id                    String                   @id @default(cuid())
+  name                  String
+  nickname              String?
+  slug                  String                   @unique
+  shortBio              String?
+  fullBio               String?
+  legendaryzStory       String?
+  contentCategory       String?
+  profileImageUrl       String?
+  bannerImageUrl        String?
+  highlightPhrase       String?
+  instagramUrl          String?
+  tiktokUrl             String?
+  youtubeUrl            String?
+  twitchUrl             String?
+  twitterUrl            String?
+  kickUrl               String?
+  active                Boolean                  @default(true)
+  featured              Boolean                  @default(false)
+  showOnHome            Boolean                  @default(false)
+  showOnInfluencersPage Boolean                  @default(true)
+  sortOrder             Int                      @default(0)
+  galleryImages         InfluencerGalleryImage[]
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+}
+
+model InfluencerGalleryImage {
+  id           String     @id @default(cuid())
+  influencerId String
+  influencer   Influencer @relation(fields: [influencerId], references: [id])
+  imageUrl     String
+  title        String?
+  sortOrder    Int        @default(0)
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model StaffMember {
+  id        String   @id @default(cuid())
+  name      String
+  nickname  String?
+  role      String
+  imageUrl  String?
+  bio       String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MatchEvent {
+  id          String   @id @default(cuid())
+  title       String
+  game        String?
+  opponent    String?
+  startsAt    DateTime
+  description String?
+  streamUrl   String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Banner {
+  id         String   @id @default(cuid())
+  title      String
+  subtitle   String?
+  imageUrl   String?
+  buttonText String?
+  buttonUrl  String?
+  section    String?
+  sortOrder  Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model SiteConfig {
+  id             String   @id @default(cuid())
+  brandName      String   @default("Legendaryz")
+  logoUrl        String?
+  faviconUrl     String?
+  primaryColor   String   @default("#a855f7")
+  secondaryColor String   @default("#6d28d9")
+  instagramUrl   String?
+  tiktokUrl      String?
+  youtubeUrl     String?
+  discordUrl     String?
+  footerText     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model CustomerBenefit {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  type        String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminSession {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId])
+}
+
+model CustomerSession {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
+}
