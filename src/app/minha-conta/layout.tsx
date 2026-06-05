@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { logoutCustomerAction } from "@/actions/auth.actions";
-import { getCurrentCustomer } from "@/lib/session";
+import { requireCustomer } from "@/lib/session";
 
 export default async function CustomerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const customer = await getCurrentCustomer();
+  const customer = await requireCustomer();
 
   return (
     <main className="min-h-screen bg-[#050008] text-white">
@@ -25,26 +25,24 @@ export default async function CustomerLayout({
             <Link href="/minha-conta/dados">Dados</Link>
           </nav>
 
-          {customer && (
-            <form action={logoutCustomerAction}>
-              <button
-                type="submit"
-                className="rounded-xl border border-red-500/40 px-4 py-2 text-xs font-black uppercase text-red-200 transition hover:bg-red-950/30"
-              >
-                Sair
-              </button>
-            </form>
-          )}
+          <form action={logoutCustomerAction}>
+            <button
+              type="submit"
+              className="rounded-xl border border-red-500/40 px-4 py-2 text-xs font-black uppercase text-red-200 transition hover:bg-red-950/30"
+            >
+              Sair
+            </button>
+          </form>
         </div>
       </header>
 
       <section className="lgz-container py-8">
-        {customer && (
-          <div className="mb-6 rounded-2xl border border-purple-500/30 bg-purple-950/20 p-4">
-            <p className="text-sm uppercase text-zinc-400">Cliente logado</p>
-            <h1 className="text-2xl font-black uppercase text-purple-200">{customer.name}</h1>
-          </div>
-        )}
+        <div className="mb-6 rounded-2xl border border-purple-500/30 bg-purple-950/20 p-4">
+          <p className="text-sm uppercase text-zinc-400">Cliente logado</p>
+          <h1 className="text-2xl font-black uppercase text-purple-200">
+            {customer.name}
+          </h1>
+        </div>
 
         {children}
       </section>

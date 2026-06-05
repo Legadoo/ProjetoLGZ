@@ -19,62 +19,7 @@ function createSessionToken() {
   return randomBytes(32).toString("hex");
 }
 
-export async function loginAdminAction(formData: FormData) {
-  const email = String(formData.get("email") || "").trim().toLowerCase();
-  const password = String(formData.get("password") || "");
-
-  if (!email || !password) {
-    redirect("/admin/login?error=missing");
-  }
-
-  const admin = await prisma.adminUser.findUnique({
-    where: { email },
-  });
-
-  if (!admin || !admin.active) {
-    redirect("/admin/login?error=invalid");
-  }
-
-  const passwordMatches = await bcrypt.compare(password, admin.password);
-
-  if (!passwordMatches) {
-    redirect("/admin/login?error=invalid");
-  }
-
-  await prisma.adminSession.deleteMany({
-    where: {
-      adminUserId: admin.id,
-      expiresAt: {
-        lt: new Date(),
-      },
-    },
-  });
-
-  const token = createSessionToken();
-  const expiresAt = getSessionExpirationDate();
-
-  await prisma.adminSession.create({
-    data: {
-      token,
-      adminUserId: admin.id,
-      expiresAt,
-    },
-  });
-
-  const cookieStore = await cookies();
-
-  cookieStore.set(ADMIN_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    expires: expiresAt,
-    path: "/",
-  });
-
-  redirect("/admin/dashboard");
-}
-
-export async function loginCustomerAction(formData: FormData) {
+export async function loginUnifiedAction(formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
 
@@ -82,51 +27,87 @@ export async function loginCustomerAction(formData: FormData) {
     redirect("/login?error=missing");
   }
 
+  const cookieStore = await cookies();
+
+  const admin = await prisma.adminUser.findUnique({
+    where: { email },
+  });
+
+  if (admin && admin.active) {
+    const adminPasswordMatches = await bcrypt.compare(password, admin.password);
+
+    if (adminPasswordMatches) {
+      await prisma.adminSession.deleteMany({
+        where: {
+          adminUserId: admin.id,
+        },
+      });
+
+      const token = createSessionToken();
+      const expiresAt = getSessionExpirationDate();
+
+      await prisma.adminSession.create({
+        data: {
+          token,
+          adminUserId: admin.id,
+          expiresAt,
+        },
+      });
+
+      cookieStore.delete(CUSTOMER_COOKIE);
+
+      cookieStore.set(ADMIN_COOKIE, token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        expires: expiresAt,
+        path: "/",
+      });
+
+      redirect("/admin/dashboard");
+    }
+  }
+
   const customer = await prisma.customer.findUnique({
     where: { email },
   });
 
-  if (!customer || !customer.active) {
-    redirect("/login?error=invalid");
+  if (customer && customer.active) {
+    const customerPasswordMatches = await bcrypt.compare(password, customer.password);
+
+    if (customerPasswordMatches) {
+      await prisma.customerSession.deleteMany({
+        where: {
+          customerId: customer.id,
+        },
+      });
+
+      const token = createSessionToken();
+      const expiresAt = getSessionExpirationDate();
+
+      await prisma.customerSession.create({
+        data: {
+          token,
+          customerId: customer.id,
+          expiresAt,
+        },
+      });
+
+      cookieStore.delete(ADMIN_COOKIE);
+
+      cookieStore.set(CUSTOMER_COOKIE, token, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        expires: expiresAt,
+        path: "/",
+      });
+
+      redirect("/minha-conta");
+    }
   }
 
-  const passwordMatches = await bcrypt.compare(password, customer.password);
-
-  if (!passwordMatches) {
-    redirect("/login?error=invalid");
-  }
-
-  await prisma.customerSession.deleteMany({
-    where: {
-      customerId: customer.id,
-      expiresAt: {
-        lt: new Date(),
-      },
-    },
-  });
-
-  const token = createSessionToken();
-  const expiresAt = getSessionExpirationDate();
-
-  await prisma.customerSession.create({
-    data: {
-      token,
-      customerId: customer.id,
-      expiresAt,
-    },
-  });
-
-  const cookieStore = await cookies();
-
-  cookieStore.set(CUSTOMER_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    expires: expiresAt,
-    path: "/",
-  });
-
-  redirect("/minha-conta");
+  redirect("/login?error=invalid");
 }
 
 export async function logoutAdminAction() {
@@ -141,7 +122,7 @@ export async function logoutAdminAction() {
 
   cookieStore.delete(ADMIN_COOKIE);
 
-  redirect("/admin/login");
+  redirect("/login?area=admin");
 }
 
 export async function logoutCustomerAction() {

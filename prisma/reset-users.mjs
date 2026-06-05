@@ -4,12 +4,18 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  const adminPassword = await bcrypt.hash("admin123", 10);
-  const customerPassword = await bcrypt.hash("cliente123", 10);
+  const adminEmail = "admin@legendaryz.gg";
+  const adminPlainPassword = "admin123";
+
+  const customerEmail = "cliente@legendaryz.gg";
+  const customerPlainPassword = "cliente123";
+
+  const adminPassword = await bcrypt.hash(adminPlainPassword, 10);
+  const customerPassword = await bcrypt.hash(customerPlainPassword, 10);
 
   const admin = await prisma.adminUser.upsert({
     where: {
-      email: "admin@legendaryz.gg",
+      email: adminEmail,
     },
     update: {
       name: "Admin Legendaryz",
@@ -19,7 +25,7 @@ async function main() {
     },
     create: {
       name: "Admin Legendaryz",
-      email: "admin@legendaryz.gg",
+      email: adminEmail,
       password: adminPassword,
       role: "SUPERADMIN",
       active: true,
@@ -28,7 +34,7 @@ async function main() {
 
   const customer = await prisma.customer.upsert({
     where: {
-      email: "cliente@legendaryz.gg",
+      email: customerEmail,
     },
     update: {
       name: "Cliente Legendaryz",
@@ -37,7 +43,7 @@ async function main() {
     },
     create: {
       name: "Cliente Legendaryz",
-      email: "cliente@legendaryz.gg",
+      email: customerEmail,
       password: customerPassword,
       active: true,
       phone: null,
@@ -45,32 +51,39 @@ async function main() {
     },
   });
 
-  await prisma.adminSession.deleteMany({
-    where: {
-      adminUserId: admin.id,
-    },
-  });
+  await prisma.adminSession.deleteMany();
+  await prisma.customerSession.deleteMany();
 
-  await prisma.customerSession.deleteMany({
-    where: {
-      customerId: customer.id,
-    },
-  });
+  const adminPasswordOk = await bcrypt.compare(adminPlainPassword, admin.password);
+  const customerPasswordOk = await bcrypt.compare(customerPlainPassword, customer.password);
 
-  console.log("Usuários resetados com sucesso.");
   console.log("");
+  console.log("USUÁRIOS RESETADOS COM SUCESSO");
+  console.log("--------------------------------");
   console.log("ADMIN:");
+  console.log("ID:", admin.id);
+  console.log("E-mail:", admin.email);
+  console.log("Senha testada:", adminPasswordOk ? "OK" : "FALHOU");
+  console.log("");
+  console.log("CLIENTE:");
+  console.log("ID:", customer.id);
+  console.log("E-mail:", customer.email);
+  console.log("Senha testada:", customerPasswordOk ? "OK" : "FALHOU");
+  console.log("");
+  console.log("LOGIN ADMIN:");
+  console.log("URL: http://localhost:3008/admin/login");
   console.log("E-mail: admin@legendaryz.gg");
   console.log("Senha: admin123");
   console.log("");
-  console.log("CLIENTE:");
+  console.log("LOGIN CLIENTE:");
+  console.log("URL: http://localhost:3008/login");
   console.log("E-mail: cliente@legendaryz.gg");
   console.log("Senha: cliente123");
 }
 
 main()
   .catch((error) => {
-    console.error(error);
+    console.error("ERRO NO RESET:", error);
     process.exit(1);
   })
   .finally(async () => {

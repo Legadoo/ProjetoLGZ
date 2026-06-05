@@ -7,15 +7,14 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isAdminRoute = pathname.startsWith("/admin");
-  const isAdminLogin = pathname === "/admin/login";
-
   const isCustomerRoute = pathname.startsWith("/minha-conta");
 
-  if (isAdminRoute && !isAdminLogin) {
+  if (isAdminRoute) {
     const adminSession = request.cookies.get(ADMIN_COOKIE)?.value;
 
     if (!adminSession) {
-      const loginUrl = new URL("/admin/login", request.url);
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("area", "admin");
       return NextResponse.redirect(loginUrl);
     }
   }

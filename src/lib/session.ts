@@ -53,7 +53,7 @@ export async function requireAdminUser() {
   const admin = await getCurrentAdminUser();
 
   if (!admin) {
-    redirect("/admin/login");
+    redirect("/login?area=admin");
   }
 
   return admin;
