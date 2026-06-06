@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { FaChevronRight, FaMicrophoneAlt } from "react-icons/fa";
-import { getInfluencers } from "@/services/influencer.service";
+import { getPublicInfluencers } from "@/services/content.service";
 import { InfluencerCard } from "./InfluencerCard";
 
-export function HomeInfluencersPreview() {
-  const influencers = getInfluencers().slice(0, 2);
+export async function HomeInfluencersPreview() {
+  const influencers = (await getPublicInfluencers()).slice(0, 2);
 
   return (
     <section className="lgz-container py-10">
@@ -34,13 +34,13 @@ export function HomeInfluencersPreview() {
           </h3>
 
           <p className="mt-4 text-sm leading-7 text-zinc-300">
-            Cada influenciador terá uma página individual com biografia,
+            Cada influenciador possui uma página individual com biografia,
             história na Legendaryz, redes sociais, galeria e destaques.
           </p>
         </div>
 
         {influencers.map((influencer) => (
-          <InfluencerCard key={influencer.slug} influencer={influencer} />
+          <InfluencerCard key={influencer.id} influencer={influencer} />
         ))}
       </div>
     </section>

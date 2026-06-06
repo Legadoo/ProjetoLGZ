@@ -8,6 +8,7 @@ export function proxy(request: NextRequest) {
 
   const isAdminRoute = pathname.startsWith("/admin");
   const isCustomerRoute = pathname.startsWith("/minha-conta");
+  const isCartRoute = pathname.startsWith("/carrinho");
 
   if (isAdminRoute) {
     const adminSession = request.cookies.get(ADMIN_COOKIE)?.value;
@@ -19,7 +20,7 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  if (isCustomerRoute) {
+  if (isCustomerRoute || isCartRoute) {
     const customerSession = request.cookies.get(CUSTOMER_COOKIE)?.value;
 
     if (!customerSession) {
@@ -32,5 +33,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/minha-conta/:path*"],
+  matcher: ["/admin/:path*", "/minha-conta/:path*", "/carrinho/:path*", "/carrinho"],
 };

@@ -8,29 +8,52 @@ datasource db {
 }
 
 model AdminUser {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      String   @default("ADMIN")
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          String         @default("ADMIN")
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   adminSessions AdminSession[]
 }
 
+model AdminSession {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+
+  @@index([adminUserId])
+}
+
 model Customer {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  phone     String?
-  document  String?
-  active    Boolean  @default(true)
-  orders    Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String            @id @default(cuid())
+  name             String
+  email            String            @unique
+  password         String
+  phone            String?
+  document         String?
+  active           Boolean           @default(true)
+  orders           Order[]
+  cartItems        CartItem[]
   customerSessions CustomerSession[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model CustomerSession {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model ProductCategory {
@@ -58,8 +81,24 @@ model Product {
   categoryId    String?
   category      ProductCategory? @relation(fields: [categoryId], references: [id])
   orderItems    OrderItem[]
+  cartItems     CartItem[]
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
+}
+
+model CartItem {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity   Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([customerId, productId])
+  @@index([customerId])
+  @@index([productId])
 }
 
 model Order {
@@ -231,26 +270,4 @@ model CustomerBenefit {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-model AdminSession {
-  id          String    @id @default(cuid())
-  token       String    @unique
-  adminUserId String
-  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
-  expiresAt   DateTime
-  createdAt   DateTime  @default(now())
-
-  @@index([adminUserId])
-}
-
-model CustomerSession {
-  id         String   @id @default(cuid())
-  token      String   @unique
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-
-  @@index([customerId])
 }

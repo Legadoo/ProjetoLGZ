@@ -1,4 +1,5 @@
-import { FaBoxOpen, FaCrown, FaShoppingCart, FaStar } from "react-icons/fa";
+import { FaBoxOpen, FaShoppingCart, FaStar } from "react-icons/fa";
+import { addToCartAction } from "@/actions/cart.actions";
 import { formatCurrencyBRL } from "@/services/product.service";
 
 type PublicProductGridProps = {
@@ -102,14 +103,31 @@ export function PublicProductGrid({
                   {product.description || "Produto oficial da Legendaryz."}
                 </p>
 
-                <div className="mt-6 flex items-center justify-between gap-4">
+                <div className="mt-6 flex flex-col gap-4">
                   <strong className="text-2xl font-black uppercase text-purple-300">
                     {formatCurrencyBRL(product.price)}
                   </strong>
 
-                  <button className="rounded-xl border border-purple-500/40 px-4 py-3 text-xs font-black uppercase text-purple-100 transition hover:bg-purple-700/40">
-                    Em breve
-                  </button>
+                  <form action={addToCartAction} className="flex gap-3">
+                    <input type="hidden" name="productId" value={product.id} />
+
+                    <input
+                      type="number"
+                      name="quantity"
+                      min="1"
+                      defaultValue="1"
+                      className="h-12 w-20 rounded-xl border border-purple-500/30 bg-black/40 px-3 text-center text-white outline-none focus:border-purple-300"
+                    />
+
+                    <button
+                      type="submit"
+                      disabled={product.stockQuantity <= 0}
+                      className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-purple-500/40 px-4 py-3 text-xs font-black uppercase text-purple-100 transition hover:bg-purple-700/40 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <FaShoppingCart />
+                      {product.stockQuantity > 0 ? "Adicionar" : "Esgotado"}
+                    </button>
+                  </form>
                 </div>
               </div>
             </article>

@@ -8,8 +8,19 @@ import {
   FaShieldAlt,
   FaUsers,
 } from "react-icons/fa";
+import { getMainHomeBanner } from "@/services/site.service";
 
-export function HeroSection() {
+export async function HeroSection() {
+  const banner = await getMainHomeBanner();
+
+  const title = banner?.title || "Welcome to Legendaryz";
+  const subtitle =
+    banner?.subtitle ||
+    "Uma plataforma gamer para unir e-sports, comunidade, influenciadores, loja, calendário de jogos e a família LGZ em um só lugar.";
+
+  const buttonText = banner?.buttonText || "Conheça a LGZ";
+  const buttonUrl = banner?.buttonUrl || "/sobre";
+
   return (
     <section className="lgz-container mt-6 overflow-hidden rounded-[2rem] border border-purple-500/30 bg-[radial-gradient(circle_at_72%_35%,rgba(176,38,255,0.32),transparent_32%),radial-gradient(circle_at_18%_80%,rgba(88,28,135,0.26),transparent_34%),linear-gradient(135deg,rgba(11,0,20,0.98),rgba(3,0,8,0.98))] shadow-[0_0_60px_rgba(126,34,206,0.18)]">
       <div className="grid min-h-[640px] items-center gap-8 p-6 md:p-10 lg:grid-cols-[1.05fr_0.95fr] xl:p-14">
@@ -20,18 +31,16 @@ export function HeroSection() {
           </div>
 
           <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.9] md:text-7xl xl:text-8xl">
-            Welcome to
-            <span className="lgz-text-gradient block">Legendaryz</span>
+            {title}
           </h1>
 
           <p className="mt-7 max-w-2xl text-lg leading-8 text-zinc-300 md:text-xl">
-            Uma plataforma gamer para unir e-sports, comunidade, influenciadores,
-            loja, calendário de jogos e a família LGZ em um só lugar.
+            {subtitle}
           </p>
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-            <Link href="/sobre" className="lgz-button">
-              Conheça a LGZ <FaChevronRight />
+            <Link href={buttonUrl} className="lgz-button">
+              {buttonText} <FaChevronRight />
             </Link>
 
             <Link href="/influenciadores" className="lgz-button lgz-button-outline">
@@ -61,13 +70,23 @@ export function HeroSection() {
         </div>
 
         <div className="grid gap-5">
-          <div className="relative mx-auto grid aspect-square w-full max-w-[520px] place-items-center rounded-full border border-purple-400/30 bg-black/30 shadow-[0_0_90px_rgba(176,38,255,0.22)]">
-            <div className="absolute inset-8 rounded-full border border-purple-500/20" />
-            <div className="absolute inset-16 rounded-full border border-purple-500/20" />
+          <div className="relative mx-auto grid aspect-square w-full max-w-[520px] place-items-center overflow-hidden rounded-full border border-purple-400/30 bg-black/30 shadow-[0_0_90px_rgba(176,38,255,0.22)]">
+            {banner?.imageUrl ? (
+              <img
+                src={banner.imageUrl}
+                alt={banner.title}
+                className="h-full w-full object-cover opacity-80"
+              />
+            ) : (
+              <>
+                <div className="absolute inset-8 rounded-full border border-purple-500/20" />
+                <div className="absolute inset-16 rounded-full border border-purple-500/20" />
 
-            <div className="relative grid h-56 w-56 place-items-center rounded-full border border-purple-400/50 bg-[radial-gradient(circle,rgba(176,38,255,0.40),rgba(10,0,18,0.92))] text-7xl font-black text-purple-100 shadow-[0_0_70px_rgba(176,38,255,0.5)] md:h-72 md:w-72 md:text-8xl">
-              LGZ
-            </div>
+                <div className="relative grid h-56 w-56 place-items-center rounded-full border border-purple-400/50 bg-[radial-gradient(circle,rgba(176,38,255,0.40),rgba(10,0,18,0.92))] text-7xl font-black text-purple-100 shadow-[0_0_70px_rgba(176,38,255,0.5)] md:h-72 md:w-72 md:text-8xl">
+                  LGZ
+                </div>
+              </>
+            )}
           </div>
 
           <div className="lgz-panel rounded-3xl p-6">
@@ -107,12 +126,12 @@ export function HeroSection() {
             <div className="mt-6 grid grid-cols-1 gap-3 text-sm text-zinc-300 sm:grid-cols-2">
               <span className="flex items-center gap-2 rounded-xl bg-black/30 p-3">
                 <FaCalendarAlt className="text-purple-300" />
-                08/06/2026
+                Próxima data
               </span>
 
               <span className="flex items-center gap-2 rounded-xl bg-black/30 p-3">
                 <FaClock className="text-purple-300" />
-                20:00 BRT
+                Ver calendário
               </span>
             </div>
 

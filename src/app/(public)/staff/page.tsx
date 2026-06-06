@@ -1,18 +1,17 @@
-import { FaShieldAlt, FaUserShield, FaUsersCog } from "react-icons/fa";
+import { FaShieldAlt } from "react-icons/fa";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { PublicPageHero } from "@/components/public/PublicPageHero";
+import { PublicStaffGrid } from "@/components/public/PublicStaffGrid";
+import { getPublicStaff } from "@/services/content.service";
 
-const staff = [
-  ["Direção", "Gestão estratégica da organização.", FaUserShield],
-  ["Operação", "Organização de eventos, times e comunidade.", FaUsersCog],
-  ["Moderação", "Suporte e cuidado com a comunidade.", FaShieldAlt],
-];
+export default async function StaffPage() {
+  const staff = await getPublicStaff();
 
-export default function StaffPage() {
   return (
     <>
       <PublicHeader />
+
       <main>
         <PublicPageHero
           eyebrow="Equipe interna"
@@ -21,18 +20,9 @@ export default function StaffPage() {
           icon={FaShieldAlt}
         />
 
-        <section className="lgz-container grid gap-4 py-10 md:grid-cols-3">
-          {staff.map(([title, description, Icon]) => (
-            <article key={String(title)} className="lgz-panel rounded-3xl p-6">
-              <div className="mb-5 grid h-16 w-16 place-items-center rounded-2xl border border-purple-500/40 bg-purple-950/40 text-3xl text-purple-200">
-                <Icon />
-              </div>
-              <h2 className="text-2xl font-black uppercase">{title}</h2>
-              <p className="mt-3 text-sm leading-6 text-zinc-400">{description}</p>
-            </article>
-          ))}
-        </section>
+        <PublicStaffGrid staff={staff} />
       </main>
+
       <PublicFooter />
     </>
   );

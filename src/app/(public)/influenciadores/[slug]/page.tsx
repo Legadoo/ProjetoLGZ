@@ -3,7 +3,10 @@ import { FaImages, FaQuoteLeft, FaUserCheck } from "react-icons/fa";
 import { InfluencerProfileHero } from "@/components/public/InfluencerProfileHero";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicHeader } from "@/components/public/PublicHeader";
-import { getInfluencerBySlug, getInfluencers } from "@/services/influencer.service";
+import {
+  getPublicInfluencerBySlug,
+  getPublicInfluencerSlugs,
+} from "@/services/content.service";
 
 type PageProps = {
   params: Promise<{
@@ -11,15 +14,17 @@ type PageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return getInfluencers().map((influencer) => ({
+export async function generateStaticParams() {
+  const influencers = await getPublicInfluencerSlugs();
+
+  return influencers.map((influencer) => ({
     slug: influencer.slug,
   }));
 }
 
 export default async function InfluencerProfilePage({ params }: PageProps) {
   const { slug } = await params;
-  const influencer = getInfluencerBySlug(slug);
+  const influencer = await getPublicInfluencerBySlug(slug);
 
   if (!influencer) {
     notFound();
@@ -43,7 +48,7 @@ export default async function InfluencerProfilePage({ params }: PageProps) {
             </h2>
 
             <p className="mt-4 text-lg leading-8 text-zinc-300">
-              {influencer.legendaryzStory}
+              {influencer.legendaryzStory || "História do influenciador dentro da Legendaryz será cadastrada em breve."}
             </p>
           </article>
 
@@ -57,7 +62,7 @@ export default async function InfluencerProfilePage({ params }: PageProps) {
             </h2>
 
             <p className="mt-4 text-lg font-black leading-8 text-zinc-300">
-              “{influencer.highlightPhrase}”
+              “{influencer.highlightPhrase || "Perfil oficial Legendaryz."}”
             </p>
           </aside>
         </section>
@@ -77,14 +82,22 @@ export default async function InfluencerProfilePage({ params }: PageProps) {
             </p>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {[1, 2, 3].map((item) => (
-                <div
-                  key={item}
-                  className="grid h-48 place-items-center rounded-3xl border border-purple-500/25 bg-[radial-gradient(circle,rgba(176,38,255,0.20),transparent_60%),linear-gradient(135deg,#10001d,#050008)] text-sm font-black uppercase text-purple-300"
-                >
-                  Imagem {item}
-                </div>
-              ))}
+              {influencer.galleryImages.length > 0 ? (
+                influencer.galleryImages.map((image) => (
+                  <div key={image.id} className="overflow-hidden rounded-3xl border border-purple-500/25 bg-black/30">
+                    <img src={image.imageUrl} alt={image.title || influencer.name} className="h-48 w-full object-cover" />
+                  </div>
+                ))
+              ) : (
+                [1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="grid h-48 place-items-center rounded-3xl border border-purple-500/25 bg-[radial-gradient(circle,rgba(176,38,255,0.20),transparent_60%),linear-gradient(135deg,#10001d,#050008)] text-sm font-black uppercase text-purple-300"
+                  >
+                    Imagem {item}
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </section>
