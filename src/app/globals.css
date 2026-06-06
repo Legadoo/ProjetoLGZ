@@ -83,3 +83,132 @@ a {
     width: min(100% - 24px, 720px);
   }
 }
+
+/* ================================
+   FASE 13 PREMIUM — Legendaryz
+   ================================ */
+
+::selection {
+  background: rgba(168, 85, 247, 0.55);
+  color: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(126, 34, 206, 0.20), transparent 28rem),
+    radial-gradient(circle at 85% 5%, rgba(192, 38, 211, 0.16), transparent 30rem),
+    linear-gradient(135deg, #050008 0%, #090011 48%, #030006 100%);
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+}
+
+.lgz-premium-noise {
+  position: relative;
+  isolation: isolate;
+}
+
+.lgz-premium-noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at center, black, transparent 70%);
+}
+
+.lgz-premium-card {
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  background:
+    radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.18), transparent 34%),
+    linear-gradient(145deg, rgba(14, 0, 27, 0.96), rgba(3, 0, 8, 0.96));
+  box-shadow:
+    0 0 34px rgba(126, 34, 206, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.lgz-glow-text {
+  text-shadow:
+    0 0 20px rgba(168, 85, 247, 0.55),
+    0 0 45px rgba(126, 34, 206, 0.30);
+}
+
+.lgz-soft-border {
+  border: 1px solid rgba(168, 85, 247, 0.22);
+}
+
+.lgz-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lgz-admin-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(113, 113, 122);
+  background: rgba(88, 28, 135, 0.14);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.18);
+}
+
+.lgz-admin-table td {
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.10);
+}
+
+@media (max-width: 768px) {
+  .lgz-container {
+    width: min(100% - 1.25rem, 1200px);
+  }
+
+  .lgz-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+/* ================================
+   ADMIN SCROLL FIX
+   ================================ */
+
+body:has(a[href="/admin/dashboard"]) {
+  overflow-x: hidden;
+}
+
+.admin-scroll-area {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.admin-content-start {
+  align-items: stretch;
+  justify-content: flex-start;
+}

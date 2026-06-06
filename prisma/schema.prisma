@@ -69,21 +69,38 @@ model ProductCategory {
 }
 
 model Product {
-  id            String           @id @default(cuid())
-  name          String
-  slug          String           @unique
-  description   String?
-  price         Float            @default(0)
-  imageUrl      String?
-  active        Boolean          @default(true)
-  featured      Boolean          @default(false)
-  stockQuantity Int              @default(0)
-  categoryId    String?
-  category      ProductCategory? @relation(fields: [categoryId], references: [id])
-  orderItems    OrderItem[]
-  cartItems     CartItem[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id                   String           @id @default(cuid())
+  name                 String
+  slug                 String           @unique
+  description          String?
+  price                Float            @default(0)
+  imageUrl             String?
+  active               Boolean          @default(true)
+  featured             Boolean          @default(false)
+  stockQuantity        Int              @default(0)
+  categoryId           String?
+  category             ProductCategory? @relation(fields: [categoryId], references: [id])
+  orderItems           OrderItem[]
+  paymentMethod        String?
+  paymentStatus        String           @default("PENDING")
+  shippingStatus       String           @default("PENDING")
+  shippingName         String?
+  shippingPhone        String?
+  shippingZipCode      String?
+  shippingState        String?
+  shippingCity         String?
+  shippingNeighborhood String?
+  shippingStreet       String?
+  shippingNumber       String?
+  shippingComplement   String?
+  shippingCarrier      String?
+  shippingTrackingCode String?
+  paidAt               DateTime?
+  shippedAt            DateTime?
+  deliveredAt          DateTime?
+  cartItems            CartItem[]
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 }
 
 model CartItem {
@@ -102,16 +119,33 @@ model CartItem {
 }
 
 model Order {
-  id         String      @id @default(cuid())
-  customerId String
-  customer   Customer    @relation(fields: [customerId], references: [id])
-  status     String      @default("PENDING")
-  total      Float       @default(0)
-  couponId   String?
-  coupon     Coupon?     @relation(fields: [couponId], references: [id])
-  items      OrderItem[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id                   String      @id @default(cuid())
+  customerId           String
+  customer             Customer    @relation(fields: [customerId], references: [id])
+  status               String      @default("PENDING")
+  total                Float       @default(0)
+  couponId             String?
+  coupon               Coupon?     @relation(fields: [couponId], references: [id])
+  items                OrderItem[]
+  paymentMethod        String?
+  paymentStatus        String      @default("PENDING")
+  shippingStatus       String      @default("PENDING")
+  shippingName         String?
+  shippingPhone        String?
+  shippingZipCode      String?
+  shippingState        String?
+  shippingCity         String?
+  shippingNeighborhood String?
+  shippingStreet       String?
+  shippingNumber       String?
+  shippingComplement   String?
+  shippingCarrier      String?
+  shippingTrackingCode String?
+  paidAt               DateTime?
+  shippedAt            DateTime?
+  deliveredAt          DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 }
 
 model OrderItem {

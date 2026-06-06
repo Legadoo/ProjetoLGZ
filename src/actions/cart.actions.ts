@@ -16,6 +16,15 @@ function normalizeQuantity(value: FormDataEntryValue | null) {
   return Math.floor(quantity);
 }
 
+function getString(formData: FormData, key: string) {
+  return String(formData.get(key) || "").trim();
+}
+
+function getNullableString(formData: FormData, key: string) {
+  const value = getString(formData, key);
+  return value || null;
+}
+
 export async function addToCartAction(formData: FormData) {
   const customer = await requireCustomer();
 
@@ -134,11 +143,41 @@ export async function applyCouponRedirectAction(formData: FormData) {
 export async function checkoutCartAction(formData: FormData) {
   const customer = await requireCustomer();
 
-  const couponCode = String(formData.get("couponCode") || "").trim().toUpperCase();
+  const couponCode = getString(formData, "couponCode").toUpperCase();
+  const paymentMethod = getString(formData, "paymentMethod") || "PIX_MANUAL";
+
+  const shippingName = getString(formData, "shippingName");
+  const shippingPhone = getString(formData, "shippingPhone");
+  const shippingZipCode = getString(formData, "shippingZipCode");
+  const shippingState = getString(formData, "shippingState");
+  const shippingCity = getString(formData, "shippingCity");
+  const shippingNeighborhood = getString(formData, "shippingNeighborhood");
+  const shippingStreet = getString(formData, "shippingStreet");
+  const shippingNumber = getString(formData, "shippingNumber");
+
+  if (
+    !shippingName ||
+    !shippingPhone ||
+    !shippingZipCode ||
+    !shippingState ||
+    !shippingCity ||
+    !shippingNeighborhood ||
+    !shippingStreet ||
+    !shippingNumber
+  ) {
+    redirect(`/checkout?coupon=${encodeURIComponent(couponCode)}&error=address`);
+  }
+
   const cart = await getCustomerCart(customer.id, couponCode || undefined);
 
   if (cart.items.length === 0) {
     redirect("/carrinho?error=empty");
+  }
+
+  for (const item of cart.items) {
+    if (item.quantity > item.product.stockQuantity) {
+      redirect("/carrinho?error=stock");
+    }
   }
 
   const order = await prisma.order.create({
@@ -147,6 +186,21 @@ export async function checkoutCartAction(formData: FormData) {
       status: "PENDING",
       total: cart.total,
       couponId: cart.coupon?.id || null,
+
+      paymentMethod,
+      paymentStatus: "PENDING",
+      shippingStatus: "PENDING",
+
+      shippingName,
+      shippingPhone,
+      shippingZipCode,
+      shippingState,
+      shippingCity,
+      shippingNeighborhood,
+      shippingStreet,
+      shippingNumber,
+      shippingComplement: getNullableString(formData, "shippingComplement"),
+
       items: {
         create: cart.items.map((item) => ({
           productId: item.productId,
@@ -191,8 +245,11 @@ export async function checkoutCartAction(formData: FormData) {
   });
 
   revalidatePath("/carrinho");
+  revalidatePath("/checkout");
+  revalidatePath("/minha-conta");
   revalidatePath("/minha-conta/pedidos");
   revalidatePath("/admin/pedidos");
+  revalidatePath("/admin/gerenciar");
   revalidatePath("/loja");
   revalidatePath("/lgznetwork");
 

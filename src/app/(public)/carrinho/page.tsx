@@ -9,7 +9,6 @@ import {
 } from "react-icons/fa";
 import {
   applyCouponRedirectAction,
-  checkoutCartAction,
   removeCartItemAction,
   updateCartItemQuantityAction,
 } from "@/actions/cart.actions";
@@ -42,7 +41,7 @@ export default async function CarrinhoPage({ searchParams }: PageProps) {
         <PublicPageHero
           eyebrow="Carrinho de compras"
           title="Seu carrinho"
-          description="Revise os produtos escolhidos, aplique cupons e finalize o pedido. Pagamento real será implementado em fase futura."
+          description="Revise os produtos escolhidos, aplique cupons e avance para o checkout com dados de entrega."
           icon={FaShoppingCart}
         />
 
@@ -97,7 +96,7 @@ export default async function CarrinhoPage({ searchParams }: PageProps) {
                     </div>
 
                     <div className="grid gap-3">
-                      <form action={updateCartItemQuantityAction} className="flex items-center gap-2">
+                      <form action={updateCartItemQuantityAction} className="flex flex-wrap items-center gap-2">
                         <input type="hidden" name="cartItemId" value={item.id} />
 
                         <button
@@ -200,20 +199,24 @@ export default async function CarrinhoPage({ searchParams }: PageProps) {
               </div>
             )}
 
-            <form action={checkoutCartAction} className="mt-6">
-              <input type="hidden" name="couponCode" value={couponCode} />
+            {params?.error === "stock" && (
+              <div className="mt-4 rounded-xl border border-red-500/30 bg-red-950/20 p-3 text-sm text-red-200">
+                Um produto possui quantidade maior que o estoque disponível.
+              </div>
+            )}
 
-              <button
-                disabled={cart.items.length === 0}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-purple-400/50 bg-purple-700/30 px-5 py-4 text-sm font-black uppercase text-purple-100 transition hover:bg-purple-600/50 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <FaCheckCircle />
-                Finalizar pedido
-              </button>
-            </form>
+            <Link
+              href={couponCode ? `/checkout?coupon=${couponCode}` : "/checkout"}
+              className={`mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-purple-400/50 bg-purple-700/30 px-5 py-4 text-sm font-black uppercase text-purple-100 transition hover:bg-purple-600/50 ${
+                cart.items.length === 0 ? "pointer-events-none opacity-50" : ""
+              }`}
+            >
+              <FaCheckCircle />
+              Ir para checkout
+            </Link>
 
             <p className="mt-4 text-center text-xs leading-5 text-zinc-500">
-              O pedido será criado como pendente. Pagamento real será implementado futuramente.
+              O pagamento será confirmado manualmente pelo admin nesta fase.
             </p>
           </aside>
         </section>
