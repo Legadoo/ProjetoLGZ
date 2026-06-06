@@ -3,10 +3,9 @@
 :root {
   --background: #050008;
   --foreground: #ffffff;
-  --lgz-purple: #b026ff;
-  --lgz-purple-dark: #5b0a88;
-  --lgz-border: rgba(176, 38, 255, 0.36);
-  --lgz-card: rgba(12, 4, 20, 0.88);
+  --lgz-purple: #a855f7;
+  --lgz-purple-dark: #581c87;
+  --lgz-magenta: #c026d3;
 }
 
 * {
@@ -19,12 +18,12 @@ html {
 
 body {
   margin: 0;
+  min-height: 100vh;
   background:
-    radial-gradient(circle at 70% 10%, rgba(176, 38, 255, 0.22), transparent 30%),
-    radial-gradient(circle at 20% 40%, rgba(126, 34, 206, 0.18), transparent 35%),
-    #050008;
+    radial-gradient(circle at 15% 10%, rgba(126, 34, 206, 0.20), transparent 28rem),
+    radial-gradient(circle at 85% 5%, rgba(192, 38, 211, 0.16), transparent 30rem),
+    linear-gradient(135deg, #050008 0%, #090011 48%, #030006 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 a {
@@ -32,100 +31,79 @@ a {
   text-decoration: none;
 }
 
-.lgz-container {
-  width: min(1440px, calc(100% - 40px));
-  margin: 0 auto;
+button,
+input,
+textarea,
+select {
+  font: inherit;
 }
 
-.lgz-panel {
-  border: 1px solid var(--lgz-border);
-  background: linear-gradient(145deg, rgba(16, 4, 27, 0.96), rgba(4, 0, 8, 0.96));
-  box-shadow: 0 0 35px rgba(176, 38, 255, 0.12);
-}
-
-.lgz-glow {
-  box-shadow: 0 0 28px rgba(176, 38, 255, 0.45);
-}
-
-.lgz-text-gradient {
-  background: linear-gradient(180deg, #f5e8ff 0%, #b026ff 55%, #6d28d9 100%);
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.lgz-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 52px;
-  padding: 0 28px;
-  border-radius: 10px;
-  border: 1px solid rgba(216, 180, 254, 0.4);
-  background: linear-gradient(135deg, #b026ff, #6d28d9);
-  color: white;
-  font-weight: 900;
-  text-transform: uppercase;
-  transition: 0.2s ease;
-}
-
-.lgz-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 24px rgba(176, 38, 255, 0.6);
-}
-
-.lgz-button-outline {
-  background: rgba(6, 0, 12, 0.6);
-}
-
-@media (max-width: 768px) {
-  .lgz-container {
-    width: min(100% - 24px, 720px);
-  }
-}
-
-/* ================================
-   FASE 13 PREMIUM — Legendaryz
-   ================================ */
-
-::selection {
-  background: rgba(168, 85, 247, 0.55);
-  color: #ffffff;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background:
-    radial-gradient(circle at 15% 10%, rgba(126, 34, 206, 0.20), transparent 28rem),
-    radial-gradient(circle at 85% 5%, rgba(192, 38, 211, 0.16), transparent 30rem),
-    linear-gradient(135deg, #050008 0%, #090011 48%, #030006 100%);
-  min-height: 100vh;
+button {
+  cursor: pointer;
 }
 
 img {
   max-width: 100%;
 }
 
-.lgz-premium-noise {
-  position: relative;
-  isolation: isolate;
+::selection {
+  background: rgba(168, 85, 247, 0.55);
+  color: #ffffff;
 }
 
-.lgz-premium-noise::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0.18;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(circle at center, black, transparent 70%);
+/* ================================
+   LAYOUT BASE
+   ================================ */
+
+.lgz-container {
+  width: min(100% - 2rem, 1440px);
+  margin-inline: auto;
+}
+
+.lgz-panel {
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  background:
+    radial-gradient(circle at 85% 15%, rgba(168, 85, 247, 0.14), transparent 32%),
+    linear-gradient(145deg, rgba(14, 0, 27, 0.94), rgba(3, 0, 8, 0.96));
+  box-shadow:
+    0 0 34px rgba(126, 34, 206, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.lgz-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(216, 180, 254, 0.55);
+  background: linear-gradient(135deg, rgba(126, 34, 206, 0.95), rgba(192, 38, 211, 0.70));
+  padding: 0.95rem 1.35rem;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  box-shadow: 0 0 28px rgba(168, 85, 247, 0.25);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.lgz-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.78);
+  background: linear-gradient(135deg, rgba(147, 51, 234, 1), rgba(217, 70, 239, 0.82));
+}
+
+.lgz-button-outline {
+  background: rgba(0, 0, 0, 0.25);
+  border-color: rgba(168, 85, 247, 0.40);
+  color: rgb(233, 213, 255);
+}
+
+.lgz-button-outline:hover {
+  background: rgba(88, 28, 135, 0.35);
 }
 
 .lgz-premium-card {
@@ -148,6 +126,21 @@ img {
   border: 1px solid rgba(168, 85, 247, 0.22);
 }
 
+/* ================================
+   ADMIN
+   ================================ */
+
+.admin-scroll-area {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.admin-content-start {
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
 .lgz-admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -168,6 +161,10 @@ img {
   padding: 1.15rem 1.5rem;
   border-bottom: 1px solid rgba(168, 85, 247, 0.10);
 }
+
+/* ================================
+   RESPONSIVO
+   ================================ */
 
 @media (max-width: 768px) {
   .lgz-container {
@@ -193,22 +190,4 @@ img {
     scroll-behavior: auto !important;
     transition-duration: 0.001ms !important;
   }
-}
-/* ================================
-   ADMIN SCROLL FIX
-   ================================ */
-
-body:has(a[href="/admin/dashboard"]) {
-  overflow-x: hidden;
-}
-
-.admin-scroll-area {
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.admin-content-start {
-  align-items: stretch;
-  justify-content: flex-start;
 }
