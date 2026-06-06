@@ -1,19 +1,32 @@
+import { FaShoppingCart } from "react-icons/fa";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicPageHero } from "@/components/public/PublicPageHero";
+import { PublicProductGrid } from "@/components/public/PublicProductGrid";
+import { getActiveProductsByCategoryType } from "@/services/product.service";
 
-export default function LojaPage() {
+export default async function LojaPage() {
+  const products = await getActiveProductsByCategoryType("ESPORTS_STORE");
+
   return (
     <>
       <PublicHeader />
-      <main className="lgz-container py-10">
-        <section className="lgz-panel rounded-3xl p-8 md:p-12">
-          <p className="text-sm font-black uppercase tracking-widest text-purple-400">Loja da E-sports</p>
-          <h1 className="mt-3 text-5xl font-black uppercase">Loja Legendaryz</h1>
-          <p className="mt-4 max-w-3xl text-zinc-300">
-            Base preparada para produtos oficiais, estoque, pedidos e vendas futuras da organização.
-          </p>
-        </section>
+
+      <main>
+        <PublicPageHero
+          eyebrow="Loja da E-sports"
+          title="Loja Legendaryz"
+          description="Produtos oficiais, drops e itens da organização Legendaryz. Os produtos cadastrados no painel administrativo aparecem aqui automaticamente."
+          icon={FaShoppingCart}
+        />
+
+        <PublicProductGrid
+          title="Produtos da Loja"
+          description="Essa área exibe apenas produtos ativos vinculados a categorias do tipo Loja E-sports."
+          products={products}
+        />
       </main>
+
       <PublicFooter />
     </>
   );
